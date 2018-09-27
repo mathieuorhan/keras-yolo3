@@ -8,15 +8,15 @@ import os
 from timeit import default_timer as timer
 
 import numpy as np
-from keras import backend as K
-from keras.models import load_model
-from keras.layers import Input
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Input
 from PIL import Image, ImageFont, ImageDraw
 
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
 import os
-from keras.utils import multi_gpu_model
+from tensorflow.keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
@@ -39,6 +39,7 @@ class YOLO(object):
     def __init__(self, **kwargs):
         self.__dict__.update(self._defaults) # set up default values
         self.__dict__.update(kwargs) # and update with user overrides
+        print(f"SIZE : {self.model_image_size}")
         self.class_names = self._get_class()
         self.anchors = self._get_anchors()
         self.sess = K.get_session()
@@ -75,7 +76,7 @@ class YOLO(object):
         else:
             assert self.yolo_model.layers[-1].output_shape[-1] == \
                 num_anchors/len(self.yolo_model.output) * (num_classes + 5), \
-                'Mismatch between model and given anchor and class sizes'
+                f'Mismatch between model and given anchor and class sizes ({num_anchors}, {num_classes}, {len(self.yolo_model.output)})'
 
         print('{} model, anchors, and classes loaded.'.format(model_path))
 
@@ -128,7 +129,7 @@ class YOLO(object):
 
         font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
                     size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
-        thickness = (image.size[0] + image.size[1]) // 300
+        thickness = (image.size[0] + image.size[1]) // 600
 
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]

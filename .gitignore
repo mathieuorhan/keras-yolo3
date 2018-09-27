@@ -106,3 +106,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# models
+model_data/names
+model_data/custom_anchors.txt
